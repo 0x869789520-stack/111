@@ -37,6 +37,27 @@
     position: relative;
   }
 
+  .bg-section {
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top:0;
+    left:0;
+    z-index: 0;
+  }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
   h1 {
     font-size: 3rem;
     background: linear-gradient(90deg, #ff7f50, #ffdf50, #50bfff);
@@ -99,26 +120,18 @@
     margin-top: 8px;
   }
 
-  .bg-section {
-    background-size: cover;
-    background-position: center;
-    width: 100%;
-    height: 100%;
-    position: relative;
-  }
-
+  /* 第二页散落小图 */
   .thumb {
-    width: 80px;
-    height: 80px;
+    width: 20vw; 
+    height: auto;
+    max-width: 200px; 
     position: absolute;
     cursor: pointer;
     border-radius: 12px;
     transition: transform 0.2s;
   }
 
-  .thumb:hover {
-    transform: scale(1.1);
-  }
+  .thumb:hover { transform: scale(1.1); }
 
   /* 模态弹窗 */
   #modal {
@@ -141,6 +154,7 @@
     p { font-size: 1rem; }
     .card { width: 90%; }
     .ca { width: 80%; }
+    .thumb { width: 30vw; max-width: 150px; }
   }
 </style>
 </head>
@@ -150,45 +164,50 @@
 
   <!-- 第一页 -->
   <div class="section" id="page1">
-    <h1>XDOG</h1>
-    <p>
-      The first meme in the x layer ecology.<br>
-      Committed to making x layer great.<br>
-      XDOG is not only a meme, but also a totem.
-    </p>
-    <p>
-      x层生态第一meme，致力于让x层变得伟大。<br>
-      XDOG不仅是meme，更是图腾。
-    </p>
-    <div class="ca" onclick="copyCA()">CA:
+    <div class="bg-section" style="background-image:url('bg1.jpg');"></div>
+    <div class="content">
+      <h1>XDOG</h1>
+      <p>
+        The first meme in the x layer ecology.<br>
+        Committed to making x layer great.<br>
+        XDOG is not only a meme, but also a totem.
+      </p>
+      <p>
+        x层生态第一meme，致力于让x层变得伟大。<br>
+        XDOG不仅是meme，更是图腾。
+      </p>
+      <div class="ca" onclick="copyCA()">CA:
 0x0cc24c51bf89c00c5affbfcf5e856c25ecbdb48e</div>
 
-    <div class="button-row" style="width:250px;">
-      <a href="https://t.me/okbokbokx" target="_blank" class="btn btn-join">Join Us</a>
-      <a href="https://x.com/CtoXdog" target="_blank" class="btn btn-x">X</a>
+      <div class="button-row" style="width:250px;">
+        <a href="https://t.me/okbokbokx" target="_blank" class="btn btn-join">Join Us</a>
+        <a href="https://x.com/CtoXdog" target="_blank" class="btn btn-x">X</a>
+      </div>
     </div>
   </div>
 
-  <!-- 第二页底图 + 三张散落小图 -->
+  <!-- 第二页 -->
   <div class="section" id="page2">
-    <div class="bg-section" style="background-image:url('bg2.jpg');">
-      <img src="img1.jpg" class="thumb" style="top:20%; left:15%;" onclick="openModal(this.src)">
-      <img src="img2.jpg" class="thumb" style="top:50%; left:60%;" onclick="openModal(this.src)">
-      <img src="img3.jpg" class="thumb" style="top:75%; left:30%;" onclick="openModal(this.src)">
+    <div class="bg-section" style="background-image:url('bg2.jpg');"></div>
+    <div class="content" id="thumb-container">
+      <img src="img1.jpg" class="thumb" onclick="openModal(this.src)">
+      <img src="img2.jpg" class="thumb" onclick="openModal(this.src)">
+      <img src="img3.jpg" class="thumb" onclick="openModal(this.src)">
     </div>
   </div>
 
   <!-- 第三页 -->
   <div class="section" id="page3">
-    <!-- CA 双行显示，可复制 -->
-    <div class="ca" onclick="copyCA()">CA:
+    <div class="bg-section" style="background-image:url('bg3.jpg');"></div>
+    <div class="content">
+      <div class="ca" onclick="copyCA()">CA:
 0x0cc24c51bf89c00c5affbfcf5e856c25ecbdb48e</div>
 
-    <!-- 实时行情卡片 -->
-    <div class="card">
-      <div class="value" id="price">价格：加载中...</div>
-      <div class="value" id="marketcap">市值：加载中...</div>
-      <a href="https://dyorswap.finance/swap/?chainId=196&outputCurrency=OKB&inputCurrency=0x0cc24c51BF89c00c5afFBfCf5E856C25ecBdb48e" target="_blank" class="btn btn-buy">Buy</a>
+      <div class="card">
+        <div class="value" id="price">价格：加载中...</div>
+        <div class="value" id="marketcap">市值：加载中...</div>
+        <a href="https://dyorswap.finance/swap/?chainId=196&outputCurrency=OKB&inputCurrency=0x0cc24c51BF89c00c5afFBfCf5E856C25ecBdb48e" target="_blank" class="btn btn-buy">Buy</a>
+      </div>
     </div>
   </div>
 
@@ -217,6 +236,34 @@
     this.style.display = 'none';
   });
 
+  // 第二页小图随机散落且不重叠
+  function placeThumbsRandomly() {
+    const container = document.getElementById('thumb-container');
+    const thumbs = container.querySelectorAll('.thumb');
+    const positions = [];
+
+    thumbs.forEach(thumb => {
+      let safe = false;
+      let top, left;
+
+      while (!safe) {
+        top = Math.random() * 70 + 10;
+        left = Math.random() * 70 + 10;
+
+        safe = positions.every(pos => {
+          return Math.abs(pos.top - top) > 15 && Math.abs(pos.left - left) > 15;
+        });
+
+        if (safe) {
+          positions.push({top, left});
+          thumb.style.top = top + '%';
+          thumb.style.left = left + '%';
+        }
+      }
+    });
+  }
+  window.addEventListener('load', placeThumbsRandomly);
+
   // CoinGecko 获取 XDOG 价格和市值
   const tokenId = 'xdog';
   let lastPrice = null;
@@ -243,7 +290,6 @@
       }
     } catch (err) {
       console.error('CoinGecko error:', err);
-      // 不清空已有值
     }
   }
 

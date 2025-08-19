@@ -3,54 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to xdog </title>
+  <title>XDOGELT - The First Meme</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body, html {
+      height: 100%;
+      font-family: 'Orbitron', sans-serif;
       color: #fff;
-      text-align: center;
-      background: url("bg1.jpg") no-repeat center center fixed;
-      background-size: cover;
+      overflow: hidden;
     }
+
+    .bg-slide {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background-size: cover;
+      background-position: center;
+      transition: opacity 1s ease-in-out;
+    }
+
     .overlay {
+      position: relative;
+      z-index: 2;
       background: rgba(0,0,0,0.6);
-      min-height: 100vh;
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      text-align: center;
       padding: 20px;
     }
+
     h1 {
       font-size: 3rem;
+      background: linear-gradient(90deg, #ff7f50, #ffdf50, #50bfff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       margin-bottom: 20px;
     }
+
     p {
-      font-size: 1.2rem;
-      max-width: 600px;
+      font-size: 1.4rem;
+      max-width: 800px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      background: rgba(255,255,255,0.05);
+      padding: 15px 20px;
+      border-radius: 15px;
     }
+
     .ca {
-      margin-top: 30px;
       font-size: 1rem;
       background: #222;
-      padding: 10px 20px;
-      border-radius: 10px;
+      padding: 10px 25px;
+      border-radius: 15px;
       word-break: break-all;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2rem; }
+      p { font-size: 1rem; }
     }
   </style>
 </head>
 <body>
+
+  <!-- 背景轮播 -->
+  <div class="bg-slide" style="background-image: url('bg1.jpg');"></div>
+  <div class="bg-slide" style="background-image: url('bg2.jpg'); opacity:0;"></div>
+  <div class="bg-slide" style="background-image: url('bg3.jpg'); opacity:0;"></div>
+
   <div class="overlay">
-    <h1>xdog</h1>
+    <h1>XDOGELT</h1>
     <p>
-      The first meme in the x layer ecology.committed to making x layer great.xdogelt is not only a meme, but also a totem. 
-       
-      x层生态第一meme，致力于让x层变得伟大xdog不仅是meme，更是图腾。
+      The first meme in the x layer ecology.<br>
+      Committed to making x layer great.<br>
+      XDOGELT is not only a meme, but also a totem.
+    </p>
+    <p>
+      x层生态第一meme，致力于让x层变得伟大。<br>
+      XDOG不仅是meme，更是图腾。
     </p>
     <div class="ca">
       CA: 0x0cc24c51bf89c00c5affbfcf5e856c25ecbdb48e
     </div>
   </div>
+
+  <script>
+    // 简单背景轮播
+    const slides = document.querySelectorAll('.bg-slide');
+    let index = 0;
+    setInterval(() => {
+      slides[index].style.opacity = 0;
+      index = (index + 1) % slides.length;
+      slides[index].style.opacity = 1;
+    }, 5000); // 每5秒切换
+  </script>
+
 </body>
 </html>

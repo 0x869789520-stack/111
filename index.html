@@ -131,7 +131,8 @@
 
     async function updatePrice() {
       try {
-        const res = await fetch(`https://api.coingecko.com/api/v3/coins/${tokenId}`);
+        // 加上时间戳避免缓存
+        const res = await fetch(`https://api.coingecko.com/api/v3/coins/${tokenId}?t=${Date.now()}`);
         const data = await res.json();
         if (data && data.market_data) {
           const price = data.market_data.current_price.usd.toFixed(6);

@@ -66,12 +66,7 @@
     margin-bottom: 20px;
   }
 
-  p {
-    font-size: 1.4rem;
-    max-width: 800px;
-    line-height: 1.6;
-    margin-bottom: 30px;
-  }
+  p { font-size: 1.4rem; max-width: 800px; line-height: 1.6; margin-bottom: 30px; }
 
   .ca {
     font-size: 1rem;
@@ -99,26 +94,12 @@
 
   .value { font-size: 1.2rem; margin: 8px 0; }
 
-  .btn {
-    display: inline-block;
-    padding: 10px 20px;
-    border-radius: 12px;
-    font-weight: bold;
-    text-decoration: none;
-    color: #fff;
-    cursor: pointer;
-  }
-
+  .btn { display: inline-block; padding: 10px 20px; border-radius: 12px; font-weight: bold; text-decoration: none; color: #fff; cursor: pointer; }
   .btn-buy { background-color: #95E244; margin-top: 12px; width: 80%; text-align: center; }
   .btn-join { background-color: #66A9E0; }
   .btn-x { background-color: #1DA1F2; }
 
-  .button-row {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 8px;
-  }
+  .button-row { display: flex; justify-content: space-between; width: 100%; margin-top: 8px; }
 
   /* 第二页散落小图 */
   .thumb {
@@ -130,24 +111,11 @@
     border-radius: 12px;
     transition: transform 0.2s;
   }
-
   .thumb:hover { transform: scale(1.1); }
 
   /* 模态弹窗 */
-  #modal {
-    display: none;
-    position: fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background: rgba(0,0,0,0.8);
-    justify-content:center;
-    align-items:center;
-    z-index:1000;
-  }
-  #modal img {
-    max-width:90%; max-height:90%;
-    border-radius:12px;
-  }
+  #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000; }
+  #modal img { max-width:90%; max-height:90%; border-radius:12px; }
 
   @media (max-width: 768px) {
     h1 { font-size: 2rem; }
@@ -167,15 +135,8 @@
     <div class="bg-section" style="background-image:url('bg1.jpg');"></div>
     <div class="content">
       <h1>XDOG</h1>
-      <p>
-        The first meme in the x layer ecology.<br>
-        Committed to making x layer great.<br>
-        XDOG is not only a meme, but also a totem.
-      </p>
-      <p>
-        x层生态第一meme，致力于让x层变得伟大。<br>
-        XDOG不仅是meme，更是图腾。
-      </p>
+      <p>The first meme in the x layer ecology.<br>Committed to making x layer great.<br>XDOG is not only a meme, but also a totem.</p>
+      <p>x层生态第一meme，致力于让x层变得伟大。<br>XDOG不仅是meme，更是图腾。</p>
       <div class="ca" onclick="copyCA()">CA:
 0x0cc24c51bf89c00c5affbfcf5e856c25ecbdb48e</div>
 
@@ -236,32 +197,34 @@
     this.style.display = 'none';
   });
 
-  // 第二页小图随机散落且不重叠
+  // 第二页小图随机散落且不重叠（增加边距避免靠近）
   function placeThumbsRandomly() {
     const container = document.getElementById('thumb-container');
-    const thumbs = container.querySelectorAll('.thumb');
+    const thumbs = Array.from(container.querySelectorAll('.thumb'));
     const positions = [];
+    const margin = 15; // 最小边距百分比
 
     thumbs.forEach(thumb => {
       let safe = false;
       let top, left;
 
-      while (!safe) {
-        top = Math.random() * 70 + 10;
-        left = Math.random() * 70 + 10;
+      let attempts = 0;
+      while (!safe && attempts < 1000) {
+        top = Math.random() * (70 - margin*2) + margin;
+        left = Math.random() * (70 - margin*2) + margin;
 
         safe = positions.every(pos => {
-          return Math.abs(pos.top - top) > 15 && Math.abs(pos.left - left) > 15;
+          return Math.abs(pos.top - top) > margin && Math.abs(pos.left - left) > margin;
         });
-
-        if (safe) {
-          positions.push({top, left});
-          thumb.style.top = top + '%';
-          thumb.style.left = left + '%';
-        }
+        attempts++;
       }
+
+      positions.push({top, left});
+      thumb.style.top = top + '%';
+      thumb.style.left = left + '%';
     });
   }
+
   window.addEventListener('load', placeThumbsRandomly);
 
   // CoinGecko 获取 XDOG 价格和市值

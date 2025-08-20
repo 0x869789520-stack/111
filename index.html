@@ -7,11 +7,10 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family: 'Orbitron', sans-serif; }
 
   html, body {
     height: 100vh;
-    font-family: 'Orbitron', sans-serif;
     color: #fff;
     overflow: hidden;
     background-color: #121212;
@@ -100,8 +99,9 @@
   .btn-buy { background-color: #95E244; margin-top: 12px; width: 80%; text-align: center; }
   .btn-join { background-color: #66A9E0; }
   .btn-x { background-color: #1DA1F2; }
+  .btn-okx { background-color: #000000; }
 
-  .button-row { display: flex; justify-content: space-between; width: 100%; margin-top: 8px; }
+  .button-row { display: flex; justify-content: space-between; width: 100%; margin-top: 8px; gap: 10px; }
 
   /* 第二页散落小图 */
   .thumb {
@@ -142,9 +142,10 @@
       <div class="ca" onclick="copyCA()">CA:
 0x0cc24c51bf89c00c5affbfcf5e856c25ecbdb48e</div>
 
-      <div class="button-row" style="width:250px;">
-        <a href="https://t.me/okbokbokx" target="_blank" class="btn btn-join">Join Us</a>
-        <a href="https://x.com/CtoXdog" target="_blank" class="btn btn-x">X</a>
+      <div class="button-row" style="max-width:350px;">
+        <a href="https://t.me/okbokbokx" target="_blank" class="btn btn-join">We on Telegram</a>
+        <a href="https://x.com/i/communities/1956604471146131859" target="_blank" class="btn btn-x">We on X</a>
+        <a href="javascript:void(0)" onclick="openQRCode()" class="btn btn-okx">We on OKX</a>
       </div>
     </div>
   </div>
@@ -187,7 +188,7 @@
     navigator.clipboard.writeText(text);
   }
 
-  // 模态弹窗
+  // 模态弹窗查看图片
   function openModal(src) {
     const modal = document.getElementById('modal');
     const modalImg = document.getElementById('modal-img');
@@ -197,6 +198,11 @@
   document.getElementById('modal').addEventListener('click', function() {
     this.style.display = 'none';
   });
+
+  // OKX 二维码弹窗
+  function openQRCode() {
+    openModal("qrcode.png"); // 这里替换成你的二维码图片路径
+  }
 
   // 第二页小图随机散落且不重叠 + 随机飞入
   function placeThumbsRandomly() {

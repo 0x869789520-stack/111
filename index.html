@@ -40,9 +40,7 @@
     transition: opacity 0.5s ease-in-out;
   }
 
-  .section.visible {
-    opacity: 1;
-  }
+  .section.visible { opacity: 1; }
 
   .bg-section {
     background-size: cover;
@@ -59,10 +57,7 @@
     position: relative;
     z-index: 2;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    height: 100%;
   }
 
   h1 {
@@ -111,7 +106,6 @@
   /* 第二页散落小图 */
   .thumb {
     width: 20vw; 
-    height: auto;
     max-width: 200px; 
     position: absolute;
     cursor: pointer;
@@ -141,7 +135,7 @@
   <!-- 第一页 -->
   <div class="section" id="page1">
     <div class="bg-section" style="background-image:url('bg1.jpg');"></div>
-    <div class="content">
+    <div class="content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
       <h1>XDOG</h1>
       <p>The first meme in the x layer ecology.<br>Committed to making x layer great.<br>XDOG is not only a meme, but also a totem.</p>
       <p>x层生态第一meme，致力于让x层变得伟大。<br>XDOG不仅是meme，更是图腾。</p>
@@ -168,10 +162,7 @@
   <!-- 第三页 -->
   <div class="section" id="page3">
     <div class="bg-section" style="background-image:url('bg3.jpg');"></div>
-    <div class="content">
-      <div class="ca" onclick="copyCA()">CA:
-0x0cc24c51bf89c00c5affbfcf5e856c25ecbdb48e</div>
-
+    <div class="content" style="display:flex;align-items:center;justify-content:center;">
       <div class="card">
         <div class="value" id="price">Price：加载中...</div>
         <div class="value" id="marketcap">MC：加载中...</div>
@@ -206,38 +197,39 @@
     this.style.display = 'none';
   });
 
-  // 第二页小图随机散落且不重叠 + 随机方向飞入
+  // 第二页小图随机散落且不重叠 + 随机飞入
   function placeThumbsRandomly() {
-    const container = document.getElementById('thumb-container');
+    const container = document.getElementById('page2');
     const thumbs = Array.from(container.querySelectorAll('.thumb'));
     const positions = [];
-    const margin = 35;
+    const margin = 20;
 
     thumbs.forEach(thumb => {
       let safe = false;
       let top, left;
-
       let attempts = 0;
+
+      const thumbW = thumb.offsetWidth || 120;
+      const thumbH = thumb.offsetHeight || 120;
+
       while (!safe && attempts < 1000) {
-        top = Math.random() * (100 - margin * 2) + margin;
-        left = Math.random() * (100 - margin * 2) + margin;
+        top = Math.random() * (container.clientHeight - thumbH - margin * 2) + margin;
+        left = Math.random() * (container.clientWidth - thumbW - margin * 2) + margin;
 
         safe = positions.every(pos => {
-          const distTop = Math.abs(pos.top - top);
-          const distLeft = Math.abs(pos.left - left);
-          return distTop > margin || distLeft > margin;
+          return !(
+            left < pos.left + pos.w + margin &&
+            left + thumbW + margin > pos.left &&
+            top < pos.top + pos.h + margin &&
+            top + thumbH + margin > pos.top
+          );
         });
         attempts++;
       }
 
-      if (!safe) {
-        top = Math.random() * 80 + 10;
-        left = Math.random() * 80 + 10;
-      }
+      positions.push({ top, left, w: thumbW, h: thumbH });
 
-      positions.push({top, left});
-
-      // 随机方向飞入：从左/右/上/下随机选择
+      // 随机飞入
       const directions = ['left', 'right', 'top', 'bottom'];
       const dir = directions[Math.floor(Math.random() * directions.length)];
       let initialTransform = '';
@@ -248,25 +240,23 @@
         case 'bottom': initialTransform = 'translateY(100vh)'; break;
       }
 
-      thumb.style.top = top + '%';
-      thumb.style.left = left + '%';
+      thumb.style.top = top + 'px';
+      thumb.style.left = left + 'px';
       thumb.style.transform = initialTransform;
       setTimeout(() => {
-        thumb.style.transform = 'translate(0, 0)';
+        thumb.style.transition = 'transform 0.8s ease-out';
+        thumb.style.transform = 'translate(0,0)';
       }, 100);
     });
   }
 
-  // 页面淡入：使用IntersectionObserver
+  // 页面淡入
   function observeSections() {
     const sections = document.querySelectorAll('.section');
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        } else {
-          entry.target.classList.remove('visible');
-        }
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+        else entry.target.classList.remove('visible');
       });
     }, { threshold: 0.5 });
 
@@ -287,12 +277,11 @@
   async function updatePrice() {
     try {
       const res = await fetch(`https://api.coingecko.com/api/v3/coins/${tokenId}?t=${Date.now()}`);
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
-      if (data && data.market_data) {
-        const price = parseFloat(data.market_data.current_price.usd).toFixed(6);
+
+      if (data?.market_data) {
+        const price = parseFloat(data.market_data.current_price.usd);
         const marketcap = data.market_data.market_cap.usd.toLocaleString();
 
         if (lastPrice !== null) {
@@ -302,10 +291,8 @@
         }
         lastPrice = price;
 
-        priceElem.textContent = `Price：$${price}`;
+        priceElem.textContent = `Price：$${price.toFixed(6)}`;
         marketcapElem.textContent = `MC：$${marketcap}`;
-      } else {
-        console.warn('No market data available');
       }
     } catch (err) {
       console.error('CoinGecko error:', err);
